@@ -27,4 +27,4 @@ class IEX:
             print(response)
             return
         return response.json()
-        
+
