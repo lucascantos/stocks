@@ -8,20 +8,17 @@ from time import sleep
 # import xlsxwriter
 import math
 import requests
-from icecream import ic as print
+# from icecream import ic as print
 from src.functions import stocks_data
 from scipy import stats
 
-# ic(stocks)
 
+
+# My info
 portifolio_size = 100000 # How much you want to invest
-
-df = stocks_data.load()
-
-print(df)
+df = stocks_data.load('stats_info', True)
+df.sort_values(by='year1Return', ascending=False, inplace=True)
+df.reset_index(inplace=True, drop=True)
 position_size = portifolio_size / len(df)
-for i in range(len(df)):
-    df.loc[i, 'N° Shares to Buy'] = math.floor(position_size/df.loc[i, 'Stock Price'])
-
-print(df)
-print(position_size)
+print (df)
+df['maxShares'] = df['price'].apply(lambda x: math.floor(position_size/x) if x else -1)

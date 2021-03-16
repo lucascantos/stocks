@@ -28,3 +28,12 @@ class IEX:
             return
         return response.json()
 
+    def stats(self, symbol):
+        params = {
+            'token': IEX_CLOUD_API_TOKEN
+        }
+        response = requests.get(f'{self.url}/stock/{symbol}/stats', params=params)
+        if response.status_code != 200:
+            print(response)
+            return
+        return response.json()

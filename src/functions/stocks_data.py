@@ -1,14 +1,27 @@
 
 import pandas as pd
 from src.services.iex import IEX
-
+from icecream import ic as print
 iex = IEX()
-def load_from_api():
+class Stocks():
+    def __init__(self, symbols_file='sp_500_stocks'):
+        self.stocks = pd.read_csv(f'src/data/{symbols_file}csv')
+    
+    def make_batch(self):
+        for symbol in range(0, len(self.stocks['Ticker']), 100):
+            yield self.stocks['Ticker'][symbol:symbol+100] 
+
+def make_batch(data):
+    for symbol in range(0, len(data), 100):
+        yield data[symbol:symbol+100] 
+
+def batch_stocks():
     stocks = pd.read_csv('src/data/sp_500_stocks.csv')
-    columns = ['Ticker', 'Stock Price', 'Market Cap', 'N° Shares to Buy']
+
+    columns = ['ticker', 'price', 'cap', 'sharesBuy']
     df = pd.DataFrame(columns=columns)
-    for symbol in range(0, len(stocks['Ticker']), 100):
-        batch = stocks['Ticker'][symbol:symbol+100] 
+
+    for batch in make_batch(stocks['Ticker']):
         batch_string = ','.join(batch)
         data = iex.batch(batch_string)
         for ticker, stock in data.items():
@@ -20,18 +33,47 @@ def load_from_api():
                 ],  index=columns), ignore_index=True)
     return df
 
-def load(update=False):
+def batch_stats():
+    stocks = pd.read_csv('src/data/sp_500_stocks.csv')
+    columns = [
+        'ticker',
+        'price', 
+        'year1Return', 
+        'month6Return', 
+        'month3Return', 
+        'month1Return', 
+        ]
+    df = pd.DataFrame()
+    for batch in make_batch(stocks['Ticker']):
+        batch_string = ','.join(batch)
+        data = iex.batch(batch_string, 'price,stats')
+        for ticker, stock in data.items():
+            row = stock['stats'].update({
+                'price': stock['price'],
+                'ticker': ticker
+            })
+            df = df.append(pd.Series(row), ignore_index=True)
+    return df
+
+def load(file, update=False):
+    function_mapping = {
+        'stocks_info': batch_stocks,
+        'stats_info': batch_stats
+    }
+    func = function_mapping.get(file)
+
     if update:
-        df = load_from_api()
-        save(df)
-        return df
-    else:           
-        try:
-            df = pd.read_csv('src/data/stocks_info.csv')
-        except FileNotFoundError:
-            df = load_from_api()
-            save(df)
+        df = func()
+        save(df, file)
         return df
 
-def save(df, filename='stocks_info.csv'):
-    df.to_csv(f'src/data/{filename}')
+    else:           
+        try:
+            df = pd.read_csv(f'src/data/{file}.csv')
+        except FileNotFoundError:
+            df = func()
+            save(df, file)
+        return df
+
+def save(df, filename):
+    df.to_csv(f'src/data/{filename}.csv')
