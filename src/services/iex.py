@@ -7,6 +7,7 @@ class IEX:
         self.token = IEX_CLOUD_API_TOKEN
 
     def stocks(self, symbol, s_type='quote'):
+        # sp_500_
         params = {
             'token': IEX_CLOUD_API_TOKEN
         }
@@ -37,3 +38,14 @@ class IEX:
             print(response)
             return
         return response.json()
+    
+    def timeseries(self, symbol, date, range):
+        params = {
+            'token': IEX_CLOUD_API_TOKEN
+        }
+        response = requests.get(f'{self.url}/stock/{symbol}/chart/{range}/{date}', params=params)
+        if response.status_code != 200:
+            print(response)
+            return
+        return response.json()
+
