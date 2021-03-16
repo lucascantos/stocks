@@ -35,24 +35,16 @@ def batch_stocks():
 
 def batch_stats():
     stocks = pd.read_csv('src/data/sp_500_stocks.csv')
-    columns = [
-        'ticker',
-        'price', 
-        'year1Return', 
-        'month6Return', 
-        'month3Return', 
-        'month1Return', 
-        ]
     df = pd.DataFrame()
     for batch in make_batch(stocks['Ticker']):
         batch_string = ','.join(batch)
         data = iex.batch(batch_string, 'price,stats')
         for ticker, stock in data.items():
-            row = stock['stats'].update({
+            stock['stats'].update({
                 'price': stock['price'],
                 'ticker': ticker
             })
-            df = df.append(pd.Series(row), ignore_index=True)
+            df = df.append(pd.Series(stock['stats']), ignore_index=True)
     return df
 
 def load(file, update=False):
