@@ -17,12 +17,15 @@ class IEX:
             return
         return response.json()
 
-    def batch(self, symbols_string, s_type='quote'):
+    def batch(self, symbols_string, s_type='quote', kwargs=None):
         params = {
             'symbols': symbols_string,
             'types': s_type,
             'token': IEX_CLOUD_API_TOKEN
         }
+        if kwargs:
+            params.update(**kwargs)
+
         response = requests.get(f'{self.url}/stock/market/batch', params=params)
         if response.status_code != 200:
             print(response)
@@ -39,11 +42,11 @@ class IEX:
             return
         return response.json()
     
-    def timeseries(self, symbol, date, range):
+    def chart(self, symbol, range, date=None):
         params = {
             'token': IEX_CLOUD_API_TOKEN
         }
-        response = requests.get(f'{self.url}/stock/{symbol}/chart/{range}/{date}', params=params)
+        response = requests.get(f'{self.url}/stock/{symbol}/chart/{range}', params=params) #{date}
         if response.status_code != 200:
             print(response)
             return
