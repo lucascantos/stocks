@@ -8,7 +8,7 @@ Machine learning
 # import xlsxwriter
 # import requests
 import matplotlib.pyplot as plt
-from icecream import ic as print
+# from icecream import ic as print
 import math
 from src.functions import stocks_data
 from src.functions import trends
@@ -35,11 +35,13 @@ print(df.shape)
 # subdf = df[df['ticker']=='ZTS']
 # print(subdf.head())
 results = trends.moving_average(df)
-f_result = next(results)
-print(f_result)
-df['SMA'] = df['close'].rolling(f_result['sma_length']).mean()
+for i in results:
+    print(i[0], i[1])
+# f_result = next(results)
+# print(f_result)
+# df['SMA'] = df['close'].rolling(f_result['sma_length']).mean()
 
-fig, ax = plt.subplots()
-ax.plot(df['close'])
-ax.plot(df['SMA'])
-plt.show()
+# fig, ax = plt.subplots()
+# ax.plot(df['close'])
+# ax.plot(df['SMA'])
+# plt.show()

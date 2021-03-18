@@ -1,12 +1,16 @@
-import pandas as pd
+import bson
+import json
 
-df = pd.DataFrame()
 
-data_row = {
-    'value': 0,
-    'number': 'b'
-}
-row = pd.Series(data_row)
-print(row)
-df = df.append(row, ignore_index=True)
-print(df)
+
+with open('leads.bson','rb') as f:
+    data = bson.loads(f.read())
+
+
+print(data)
+for k,v in data['user'].items():
+    # print(v)
+    pass
+
+with open('a.json', 'w') as f:
+    json.dump(data, f)
