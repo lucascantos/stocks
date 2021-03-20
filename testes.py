@@ -1,16 +1,15 @@
-import bson
-import json
+import pandas as pd
 
+df = pd.DataFrame()
+x = pd.Series([i for i in range(10)])
+y = pd.Series([2,1,0])
 
+w = 5
+p = 5
 
-with open('leads.bson','rb') as f:
-    data = bson.loads(f.read())
+m = w /(p+1)
 
-
-print(data)
-for k,v in data['user'].items():
-    # print(v)
-    pass
-
-with open('a.json', 'w') as f:
-    json.dump(data, f)
+k = x.rolling(p).mean()
+y = x.ewm(alpha=m).mean()
+z = x.ewm(span=p).mean()
+print(y==k)

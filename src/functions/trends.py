@@ -1,10 +1,24 @@
 from scipy.stats import ttest_ind
 
-def moving_average(df):
+def moving_average(df, period, smooth=None, column='close'):
+    if column:
+        data = df[column]
+    else:
+        data = df
+
+    if smooth:
+        weight = smooth/(period+1)
+        return data.ewm(alpha=weight).mean()
+    else:
+        return data.rolling(period).mean()
+
+def moving_average_opt(df):
     '''
     For a given stock, gives the best Simple Moving Average period
     '''
-
+    '''
+    ? How long do i want to let my money with the bot => percentage os testing numbers (%)
+    '''
     
     train_size = 0.6
     for n_days in range(2, 50):      
