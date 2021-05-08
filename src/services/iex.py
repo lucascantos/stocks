@@ -18,6 +18,9 @@ class IEX:
         return response.json()
 
     def batch(self, symbols_string, s_type='quote', kwargs=None):
+        '''
+        Batch of data on symbols
+        '''
         params = {
             'symbols': symbols_string,
             'types': s_type,
@@ -43,6 +46,9 @@ class IEX:
         return response.json()
     
     def chart(self, symbol, range, date=None):
+        '''
+
+        '''
         params = {
             'token': IEX_CLOUD_API_TOKEN
         }
@@ -52,3 +58,12 @@ class IEX:
             return
         return response.json()
 
+    def currency_historical(self):        
+        params = {
+            'token': IEX_CLOUD_API_TOKEN
+        }
+        response = requests.get(f'{self.url}/fx/historical', params=params) 
+        if response.status_code != 200:
+            print(response)
+            return
+        return response.json()
